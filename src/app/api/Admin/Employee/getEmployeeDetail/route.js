@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import connectMongoDB from "../../../../../libs/dbConnect";
-import { getToken } from "../../../../../libs/getToken";
-import Employee from "../../../../../models/Employee";
+import connectMongoDB from "../../../../../../libs/dbConnect";
+import { getToken } from "../../../../../../libs/getToken";
+import Employee from "../../../../../../models/Employee";
 import mongoose from "mongoose";
+import { corsHeaders } from "../../../../../../libs/corsHeader";
 
 export async function GET(req) {
   try {
@@ -12,7 +13,10 @@ export async function GET(req) {
     if (!token || token.error) {
       return NextResponse.json(
         { error: token?.error || "Unauthorized Access" },
-        { status: 401 }
+        {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
       );
     }
 
@@ -80,7 +84,18 @@ export async function GET(req) {
     console.error("Error in get all appointment of this employee:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
     );
   }
+}
+
+// Handle CORS preflight
+export async function OPTIONS(req) {
+  return new NextResponse(null, {
+    status: 200,
+    headers: corsHeaders,
+  });
 }

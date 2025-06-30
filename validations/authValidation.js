@@ -32,21 +32,28 @@ export const signupSchema = Joi.object({
   }),
 });
 
-export const loginSchemaAdmin = Joi.object({
+export const loginSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
-  // role: Joi.string().valid("business", "people").required(),
+  role: Joi.string()
+    .valid("customer", "admin", "branchAdmin", "employee")
+    .required(),
 });
 
 export const forgotPasswordSchema = Joi.object({
   email: Joi.string().email().required(),
+  role: Joi.string()
+    .valid("customer", "admin", "branchAdmin", "employee")
+    .required(),
 });
 
 export const resetPasswordSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
   confirmPassword: Joi.string().min(6).required(),
-  role: Joi.string().required(),
+  role: Joi.string()
+    .valid("customer", "admin", "branchAdmin", "employee")
+    .required(),
 });
 
 export const otpVerificationSchema = Joi.object({

@@ -8,6 +8,7 @@ if (!cached) {
 
 const connectMongoDB = async () => {
   if (cached.conn) {
+    console.log("MongoDB Connected via cache");
     return cached.conn;
   }
 

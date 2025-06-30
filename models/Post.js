@@ -3,13 +3,25 @@ const mongoose = require("mongoose");
 // Define the schema for a post
 const postSchema = new mongoose.Schema(
   {
-    image: {
+    title: {
       type: String,
-      default: null, // Optional field for an image URL
+      required: true,
+    },
+    image: {
+      type: [String],
+      default: [], // Default to empty array if no images
+    },
+    description: {
+      type: String,
+      required: true,
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true, // Post must have an author
+    },
+    role: {
+      type: String,
+      required: true,
     },
     userModel: {
       type: String,

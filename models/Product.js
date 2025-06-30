@@ -5,6 +5,10 @@ const mongoose = require("mongoose");
 // Define the schema for a post
 const productSchema = new mongoose.Schema(
   {
+    type: {
+      type: String,
+      required: true,
+    },
     title: {
       type: String,
       default: null, // Optional field for an image URL
@@ -39,35 +43,35 @@ const productSchema = new mongoose.Schema(
     },
     purchaseQuantity: {
       type: String,
-      required: true,
+      // required: true,
     },
     warningAlert: {
       type: String,
-      required: true,
+      // required: true,
     },
     purchasePricePerPiece: {
       type: String,
-      required: true,
+      // required: true,
     },
     purchaseFrom: {
       type: String,
-      required: true,
-    },
-    sellPricePerPiece: {
-      type: String,
-      required: true,
+      // required: true,
     },
     purchaseDate: {
       type: Date,
-      required: true,
+      // required: true,
+    },
+    sellPricePerPiece: {
+      type: String,
+      // required: true,
     },
     invoice: {
       type: String,
-      required: true,
+      // required: true,
     },
     discount: {
       type: Boolean,
-      defaultult: false,
+      default: false,
     },
     discountPrice: {
       type: String,

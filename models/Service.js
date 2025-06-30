@@ -1,25 +1,23 @@
-import { ref, required } from "joi";
-
 const mongoose = require("mongoose");
 
 // Define the schema for a post
 const serviceSchema = new mongoose.Schema(
   {
+    category: {
+      type: String, // hair,massage,beauty
+      required: true,
+    },
     title: {
       type: String,
       default: null, // Optional field for an image URL
     },
-    category: {
+    serviceName: {
       type: String,
       required: true,
     },
     branchId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Branch",
-    },
-    serviceName: {
-      type: String,
-      required: true,
     },
     serviceMints: {
       type: String,
@@ -53,18 +51,29 @@ const serviceSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
-    discountDays: [
-      {
-        type: String,
-        default: null,
-      },
-    ],
+    onlyBetweenTime: {
+      type: Boolean,
+      default: false,
+    },
+    onlyBetweenStartTime: {
+      type: String,
+      default: null,
+    },
+    onlyBetweenEndTime: {
+      type: String,
+      default: null,
+    },
+    onlyBetweenDays: {
+      type: [String],
+      default: null,
+    },
   },
   {
     timestamps: true, // Automatically adds createdAt and updatedAt fields
   }
 );
 // Check if the model is already compiled, if not, compile it.
-const Service = mongoose.models.Service || mongoose.model("Service", serviceSchema);
+const Service =
+  mongoose.models.Service || mongoose.model("Service", serviceSchema);
 
 export default Service;

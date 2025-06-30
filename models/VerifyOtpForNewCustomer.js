@@ -1,10 +1,14 @@
 import mongoose, { Schema, models, model } from "mongoose";
 
-const ForgotPasswords = new Schema(
+const VerifyOtpForNewCustomer = new Schema(
   {
     code: {
       type: Number,
       unique: true,
+      required: true,
+    },
+    password: {
+      type: String,
       required: true,
     },
     email: {
@@ -15,10 +19,6 @@ const ForgotPasswords = new Schema(
       type: Boolean,
       default: false,
     },
-    role: {
-      type: String,
-      enum: ["admin", "branch", "sub-branch", "employee", "customer"],
-    },
     expiresAt: {
       type: Date,
       required: true,
@@ -27,5 +27,5 @@ const ForgotPasswords = new Schema(
   { timestamps: true }
 );
 
-export default models?.ForgotPasswords ||
-  model("ForgotPasswords", ForgotPasswords, "ForgotPasswords");
+export default models?.VerifyOtpForNewCustomer ||
+  model("VerifyOtpForNewCustomer", VerifyOtpForNewCustomer, "VerifyOtpForNewCustomer");

@@ -13,6 +13,14 @@ const customerSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    image: {
+      type: String,
+      trim: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
     email: {
       type: String,
       required: true,
@@ -25,6 +33,17 @@ const customerSchema = new mongoose.Schema(
     branchId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Branch",
+      required: true,
+    },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      refPath: "createdByModel",
+      required: true,
+    },
+    createdByModel: {
+      type: String,
+      required: true,
+      enum: ["Admin", "Branch"],
     },
     phone: {
       type: String,
@@ -33,6 +52,18 @@ const customerSchema = new mongoose.Schema(
     branchNote: {
       type: String,
       required: true,
+    },
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number], // [longitude, latitude]
+        required: false,
+      },
+      address: { type: String }, // optional readable address
     },
   },
   {
