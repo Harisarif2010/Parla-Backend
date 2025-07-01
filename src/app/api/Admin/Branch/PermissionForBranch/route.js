@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import connectMongoDB from "../../../../../libs/dbConnect";
 import { getToken } from "../../../../../libs/getToken";
 import Permission from "../../../../../models/Permission";
+import connectMongoDB from "../../../../../../libs/dbConnect";
 
 export async function POST(req) {
   await connectMongoDB();
@@ -13,17 +13,17 @@ export async function POST(req) {
       { status: 401 }
     );
   }
-    const body = await req.json(); // Get the request body { getPermission : "true" , branchId: ""}
-    
-    if (body?.getPermission === "true") {
-        const permission = await Permission.find({
-            branchId: body?.branchId,
-        });
-        return NextResponse.json({
-            message: "Permission Fetched Successfully",
-            data: permission,
-        });
-    }
+  const body = await req.json(); // Get the request body { getPermission : "true" , branchId: ""}
+
+  if (body?.getPermission === "true") {
+    const permission = await Permission.find({
+      branchId: body?.branchId,
+    });
+    return NextResponse.json({
+      message: "Permission Fetched Successfully",
+      data: permission,
+    });
+  }
 
   // To Check whether the branch is creating by admin or branch admin
   const addPermission = await Product.create(body);
