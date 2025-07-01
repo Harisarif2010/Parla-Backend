@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
-import Permission from "../../../../../models/Permission";
 import connectMongoDB from "../../../../../../libs/dbConnect";
 import { getToken } from "../../../../../../libs/getToken";
+import Permission from "../../../../../../models/Permission";
+import Product from "../../../../../../models/Product";
 
 export async function POST(req) {
   await connectMongoDB();

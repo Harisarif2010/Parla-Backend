@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import Offer from "../../../../../models/Offer";
 import connectMongoDB from "../../../../../../libs/dbConnect";
 import { getToken } from "../../../../../../libs/getToken";
+import Offer from "../../../../../../models/Offer";
 
 export async function POST(req) {
   await connectMongoDB();
