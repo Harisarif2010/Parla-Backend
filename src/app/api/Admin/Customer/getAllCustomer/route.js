@@ -20,33 +20,36 @@ export async function GET(req) {
     }
 
     const { searchParams } = new URL(req.url);
+    const search = searchParams.get("search") || "";
     const page = parseInt(searchParams.get("page") || "1", 10);
     const limit = parseInt(searchParams.get("limit") || "10", 10);
     const skip = (page - 1) * limit;
 
+    let query = {};
+    if (search === "all") {
+      query = {};
+    } else {
+      query = {
+        $or: [
+          { firstName: { $regex: search, $options: "i" } },
+          { lastName: { $regex: search, $options: "i" } },
+        ],
+      };
+    }
     // Step 1: Get total count of matching posts
-    const totalCountAgg = await Customer.aggregate([{ $count: "total" }]);
+    const totalCountAgg = await Customer.aggregate([
+      { $match: query },
+      { $count: "total" },
+    ]);
     const total = totalCountAgg[0]?.total || 0;
     // Step 2: Get paginated posts
-    const allCustomers = await Customer.find(
-      {},
-      {
-        _id: 1,
-        firstName: 1,
-        lastName: 1,
-        phone: 1,
-        // email: 1,
-        // city: 1,
-        // phone: 1,
-        // branchNote: 1,
-        // createdAt: 1,
-        // updatedAt: 1,
-      }
-    )
-    //   .populate({
-    //     path: "createdBy",
-    //     select: "fullName email",
-    //   })
+    const allCustomers = await Customer.find({
+      ...query,
+    })
+      //   .populate({
+      //     path: "createdBy",
+      //     select: "fullName email",
+      //   })
       .skip(skip)
       .limit(limit);
 
@@ -58,13 +61,14 @@ export async function GET(req) {
       {
         message: "Customers Retreived Successfully",
         data: allCustomers,
+        totalLength: allCustomers.length,
         current_page: page,
         next_page,
         per_page: limit,
         has_more,
       },
       {
-        status: 201,
+        status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );

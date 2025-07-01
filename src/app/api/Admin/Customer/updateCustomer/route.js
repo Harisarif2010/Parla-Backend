@@ -46,9 +46,6 @@ export async function PATCH(req) {
   const branchNote = formData.get("branchNote");
   const createdBy = formData.get("createdBy");
   const createdByModel = formData.get("createdByModel");
-  const type = formData.get("type");
-  const password = formData.get("password");
-  const otp = formData.get("otp");
   const lat = parseFloat(formData.get("lat"));
   const long = parseFloat(formData.get("long"));
   const address = formData.get("address");

@@ -42,30 +42,33 @@ export async function POST(req) {
   const lat = parseFloat(formData.get("lat"));
   const long = parseFloat(formData.get("long"));
   const address = formData.get("address");  
+  const missingFields = [];
 
-
-  if (
-    !firstName ||
-    !lastName ||
-    !image ||
-    !email ||
-    !city ||
-    !phone ||
-    !branchNote ||
-    !branchId ||
-    !createdBy ||
-    !lat ||
-    !long ||
-    !createdByModel
-  ) {
+  if (!firstName) missingFields.push("firstName");
+  if (!lastName) missingFields.push("lastName");
+  if (!image) missingFields.push("image");
+  if (!email) missingFields.push("email");
+  if (!city) missingFields.push("city");
+  if (!phone) missingFields.push("phone");
+  if (!branchNote) missingFields.push("branchNote");
+  if (!branchId) missingFields.push("branchId");
+  if (!createdBy) missingFields.push("createdBy");
+  if (!lat) missingFields.push("lat");
+  if (!long) missingFields.push("long");
+  if (!createdByModel) missingFields.push("createdByModel");
+  if (missingFields.length > 0) {
     return NextResponse.json(
-      { error: "All fields are required" },
+      {
+        error: "Missing required fields",
+        missing: missingFields,
+      },
       {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
   }
+  
 
   if (type === "verifyEmail") {
     if (!password || !otp) {
