@@ -2,20 +2,97 @@ const mongoose = require("mongoose");
 
 const employeeSchema = new mongoose.Schema(
   {
-    fullName: { type: String, required: true },
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
     email: { type: String, required: true },
     image: { type: String, required: true },
-    userName: { type: String, required: true },
     password: { type: String, required: true },
-    phone: { type: String, required: true },
-    role: { type: String, required: true },
-    category: { type: String, required: true },
-    createdByRole: {
+    tCNo: { type: String, required: true },
+    country: { type: String, required: true },
+    city: { type: String, required: true },
+    district: { type: String, required: true },
+    town: { type: String, required: true },
+    street: { type: String, required: true },
+    doorNo: { type: String, required: true },
+    salarayAmount: { type: Number, required: true },
+    salarayCurrency: { type: String, required: true },
+    paymentDate: { type: Date, required: true },
+    commission: { type: Boolean, required: false },
+    commissionPercentage: { type: Number, required: false },
+    monthlyWageSlip: {
+      type: [
+        {
+          fileUrl: { type: String, required: true },
+          uploadedAt: { type: Date, required: true }, // user-provided date
+        },
+      ],
+      required: false,
+    },
+    gender: {
       type: String,
-      enum: ["admin", "branch"],
+      // enum: ["male", "female"],
       required: true,
     },
-    createdById: {
+    personalType: {
+      type: String,
+      // enum: ["full-time", "part-time"],
+      required: true,
+    },
+    serviceType: {
+      type: String,
+      // enum: ["full-time", "part-time"],
+      required: true,
+    },
+    commissionDate: {
+      type: Date,
+      // required: true,
+    },
+    startingDate: {
+      type: Date,
+      // required: true,
+    },
+    lastDayAtWork: {
+      type: String,
+      // required: true,
+    },
+    resignationDate: {
+      type: String,
+      // required: true,
+    },
+    cnicFront: {
+      type: String,
+      required: true,
+    },
+    cnicBack: {
+      type: String,
+      required: true,
+    },
+    SpecializationCertificate: {
+      type: String,
+      required: true,
+    },
+    certificate: {
+      type: String,
+      required: true,
+    },
+    cv: {
+      type: String,
+      required: true,
+    },
+    hiredBy: {
+      type: String,
+      required: true,
+    },
+    responsibility: {
+      type: [String],
+      required: true,
+    },
+    createdByRole: {
+      type: String,
+      enum: ["Branch", "Admin"],
+      required: true,
+    },
+    branchId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       refPath: "createdByRole", // 👈 dynamic reference based on createdByRole

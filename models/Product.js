@@ -43,15 +43,15 @@ const productSchema = new mongoose.Schema(
     },
     purchaseQuantity: {
       type: String,
-      // required: true,
+      required: true,
     },
     warningAlert: {
       type: String,
-      // required: true,
+      required: true,
     },
     purchasePricePerPiece: {
       type: String,
-      // required: true,
+      required: true,
     },
     purchaseFrom: {
       type: String,
@@ -85,6 +85,10 @@ const productSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    creationBy: { type: String, default: null },
+    creationDate: { type: Date, default: Date.now },
+    explanation: { type: String, default: null },
+    status: { type: String, default: null },
   },
   {
     timestamps: true, // Automatically adds createdAt and updatedAt fields

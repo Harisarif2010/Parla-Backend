@@ -5,44 +5,50 @@ import mongoose from "mongoose";
 import Service from "../../../../../../models/Service";
 import Product from "../../../../../../models/Product";
 import Offer from "../../../../../../models/Offer";
+import Employee from "../../../../../../models/Employee";
+import { corsHeaders } from "../../../../../../libs/corsHeader";
 
 export async function GET(req) {
   await connectMongoDB();
 
-  const token = await getToken(req);
-  if (!token || token.error) {
-    return NextResponse.json(
-      { error: token?.error || "Unauthorized Access" },
-      { status: 401, headers: corsHeaders }
-    );
-  }
+  // const token = await getToken(req);
+  // if (!token || token.error) {
+  //   return NextResponse.json(
+  //     { error: token?.error || "Unauthorized Access" },
+  //     { status: 401, headers: corsHeaders }
+  //   );
+  // }
   const { searchParams } = new URL(req.url);
   const branchId = searchParams.get("branchId");
   const type = searchParams.get("type");
   const category = searchParams.get("category");
-//   const page = searchParams.get("page");
-//   const limit = searchParams.get("limit");
-//   const skip = (page - 1) * limit;
+  //   const page = searchParams.get("page");
+  //   const limit = searchParams.get("limit");
+  //   const skip = (page - 1) * limit;
 
-let model;
+  let model;
 
-if (type === "service") {
-  model = Service;
-} else if (type === "product") {
-  model = Product;
-} else {
-  model = Offer;
-}
+  if (type === "service") {
+    model = Service;
+  } else if (type === "product") {
+    model = Product;
+  } else if (type === "offer") {
+    model = Offer;
+  } else if (type === "personal") {
+    model = Employee;
+  } else {
+    return NextResponse.json({ error: "Invalid type" }, { status: 400 });
+  }
 
-// Build match object conditionally
-const matchStage = {
-  branchId: new mongoose.Types.ObjectId(branchId),
-};
+  // Build match object conditionally
+  const matchStage = {
+    branchId: new mongoose.Types.ObjectId(branchId),
+  };
 
-// Only include category if model is Service
-if (type === "service" && category) {
-  matchStage.category = category;
-}
+  // Only include category if model is Service
+  if (type === "service" && category) {
+    matchStage.category = category;
+  }
   const result = await model.aggregate([
     {
       $match: matchStage,

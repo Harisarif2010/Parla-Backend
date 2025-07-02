@@ -207,7 +207,7 @@ export async function GET(req) {
         has_more,
       },
       {
-        status: 201,
+        status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );

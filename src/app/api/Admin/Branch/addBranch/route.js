@@ -54,6 +54,112 @@ export async function POST(req) {
   const createdByModels = formData.get("createdByModels");
   const createdBy = formData.get("createdBy");
 
+  const fields = [];
+  if (!firstName) {
+    fields.push("firstName");
+  }
+  if (!branchName) {
+    fields.push("branchName");
+  }
+  if (!userName) {
+    fields.push("userName");
+  }
+  if (!password) {
+    fields.push("password");
+  }
+  if (!title) {
+    fields.push("title");
+  }
+  if (!image) {
+    fields.push("image");
+  }
+  if (!vat) {
+    fields.push("vat");
+  }
+  if (!textAdministration) {
+    fields.push("textAdministration");
+  }
+  if (!category) {
+    fields.push("category");
+  }
+  if (!taxPlate) {
+    fields.push("taxPlate");
+  }
+  if (!registration) {
+    fields.push("registration");
+  }
+  if (!license) {
+    fields.push("license");
+  }
+  if (!certificate) {
+    fields.push("certificate");
+  }
+  if (!paymentMethod) {
+    fields.push("paymentMethod");
+  }
+  if (!freeCancelBefore) {
+    fields.push("freeCancelBefore");
+  }
+  if (!country) {
+    fields.push("country");
+  }
+  if (!city) {
+    fields.push("city");
+  }
+  if (!district) {
+    fields.push("district");
+  }
+  if (!town) {
+    fields.push("town");
+  }
+  if (!street) {
+    fields.push("street");
+  }
+  if (!streetNo) {
+    fields.push("streetNo");
+  }
+  if (!createdDate) {
+    fields.push("createdDate");
+  }
+  if (!lat) {
+    fields.push("lat");
+  }
+  if (!long) {
+    fields.push("long");
+  }
+  if (!address) {
+    fields.push("address");
+  }
+  if (!authorizedName) {
+    fields.push("authorizedName");
+  }
+  if (!phone) {
+    fields.push("phone");
+  }
+  if (!branchPhone) {
+    fields.push("branchPhone");
+  }
+  if (!branchEmail) {
+    fields.push("branchEmail");
+  }
+  if (!workingHoursRaw) {
+    fields.push("workingHours");
+  }
+  if (!createdByModels) {
+    fields.push("createdByModels");
+  }
+  if (!createdBy) {
+    fields.push("createdBy");
+  }
+  if (fields.length > 0) {
+    return NextResponse.json(
+      { error: `All Fields Are Required: ${fields.join(", ")}` },
+      {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
+  }
   if (
     !firstName ||
     !branchName ||

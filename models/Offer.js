@@ -9,13 +9,9 @@ const offerSchema = new mongoose.Schema(
       type: String,
       default: null, // Optional field for an image URL
     },
-    category: {
-      type: String,
-      required: true,
-    },
-    // employeeId: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "Employee",
+    // category: {
+    //   type: String,
+    //   required: true,
     // },
     branchId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -60,7 +56,7 @@ const offerSchema = new mongoose.Schema(
     createdBy: {
       type: String,
       default: null,
-        },
+    },
     createdDate: {
       type: Date,
       default: null,

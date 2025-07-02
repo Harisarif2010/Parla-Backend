@@ -25,18 +25,18 @@ export async function GET(req) {
 
   try {
     const allBranches = await Branch.find(
-      {},
-      {
-        _id: 1,
-        firstName: 1,
-        branchPhone: 1,
-        // email: 1,
-        // city: 1,
-        // phone: 1,
-        // branchNote: 1,
-        // createdAt: 1,
-        // updatedAt: 1,
-      }
+      {}
+      // {
+      //   _id: 1,
+      //   firstName: 1,
+      //   branchPhone: 1,
+      //   // email: 1,
+      //   // city: 1,
+      //   // phone: 1,
+      //   // branchNote: 1,
+      //   // createdAt: 1,
+      //   // updatedAt: 1,
+      // }
     )
       //   .populate({
       //     path: "createdBy",
@@ -47,14 +47,16 @@ export async function GET(req) {
 
     // Step 3: Calculate pagination meta
     const has_more = page * limit < total;
+    // console.log(has_more);
+    // console.log(page);
     const next_page = has_more ? page + 1 : null;
 
     return NextResponse.json({
       message: "Branches Fetched Successfully",
       data: allBranches,
-      current_page: page,
-      next_page,
-      per_page: limit,
+      current_page: Number(page),
+      next_page: Number(next_page),
+      per_page: Number(limit),
       has_more,
     });
   } catch (error) {

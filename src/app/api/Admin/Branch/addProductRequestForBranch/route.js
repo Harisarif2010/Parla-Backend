@@ -1,4 +1,8 @@
 import { NextResponse } from "next/server";
+import connectMongoDB from "../../../../../../libs/dbConnect";
+import { getToken } from "../../../../../../libs/getToken";
+import { corsHeaders } from "../../../../../../libs/corsHeader";
+import Product from "../../../../../../models/Product"; // Make sure Product model is imported
 
 export async function POST(req) {
   await connectMongoDB();
@@ -7,36 +11,32 @@ export async function POST(req) {
   if (!token || token.error) {
     return NextResponse.json(
       { error: token?.error || "Unauthorized Access" },
-      {
-        status: 401,
-        headers: corsHeaders,
-      }
+      { status: 401, headers: corsHeaders }
     );
   }
-  const formData = await req.formData();
 
-  const type = formData.get("type");
-  const title = formData.get("title");
-  const category = formData.get("category");
-  const branchId = formData.get("branchId");
-  const productName = formData.get("productName");
-  const productBrand = formData.get("productBrand");
-  const productCode = formData.get("productCode");
-  const gender = formData.get("gender");
-  const inventory = formData.get("inventory");
-  const purchaseQuantity = formData.get("purchaseQuantity");
-  const warningAlert = formData.get("warningAlert");
-  const purchasePricePerPiece = formData.get("purchasePricePerPiece");
-  const purchaseFrom = formData.get("purchaseFrom");
-  const purchaseDate = formData.get("purchaseDate");
-  const sellPricePerPiece = formData.get("sellPricePerPiece");
-  const invoice = formData.get("invoice");
-  const discount = formData.get("discount");
-  const discountPrice = formData.get("discountPrice");
-  const discountStartDate = formData.get("discountStartDate");
-  const discountEndDate = formData.get("discountEndDate");
+  const body = await req.json();
 
-  if (type === "new") {
+  const {
+    type,
+    category,
+    title,
+    productName,
+    productBrand,
+    productCode,
+    branchId,
+    gender,
+    inventory,
+    purchaseQuantity,
+    warningAlert,
+    purchasePricePerPiece,
+    creationBy,
+    creationDate,
+    explanation,
+    status,
+  } = body;
+
+  if (type === "request") {
     if (
       !title ||
       !category ||
@@ -49,60 +49,21 @@ export async function POST(req) {
       !purchaseQuantity ||
       !warningAlert ||
       !purchasePricePerPiece ||
-      !purchaseFrom ||
-      !purchaseDate ||
-      !sellPricePerPiece ||
-      !invoice
+      !creationBy ||
+      !creationDate ||
+      !explanation ||
+      !status
     ) {
       return NextResponse.json(
         { error: "All fields are required" },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
-  } else if (type === "inventory") {
-    if (
-      !title ||
-      !category ||
-      !branchId ||
-      !productName ||
-      !productBrand ||
-      !productCode ||
-      !gender ||
-      !inventory ||
-      !purchaseQuantity
-    ) {
-      return NextResponse.json(
-        { error: "All fields are required" },
-        { status: 400 }
-      );
-    }
-  }
-
-  if (discount === "true") {
-    if (!discountPrice || !discountStartDate || !discountEndDate) {
-      return NextResponse.json(
-        { error: "All fields are required for discount" },
-        { status: 400 }
-      );
-    }
-  }
-
-  if (type === "new") {
-    // Upload the image to S3
-    const bytes = await invoice.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const fileName = `${Date.now()}-${invoice.name}`;
-
-    const params = {
-      Bucket: process.env.AWS_BUCKET_NAME,
-      Key: fileName, // optional folder
-      Body: buffer,
-      ContentType: invoice.type,
-      // ACL: "public-read",
-    };
-
-    await s3.send(new PutObjectCommand(params));
-    const invoiceUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
+  } else {
+    return NextResponse.json(
+      { error: "Invalid request type" },
+      { status: 400, headers: corsHeaders }
+    );
   }
 
   const addProduct = await Product.create({
@@ -118,25 +79,25 @@ export async function POST(req) {
     purchaseQuantity,
     warningAlert,
     purchasePricePerPiece,
-    purchaseFrom,
-    purchaseDate,
-    sellPricePerPiece,
-    invoice: invoiceUrl,
-    discount,
-    discountPrice,
-    discountStartDate,
-    discountEndDate,
+    creationBy,
+    creationDate,
+    explanation,
+    status,
   });
-  await addProduct.save();
+
   if (addProduct) {
-    return NextResponse.json({
-      message: "Product Added For Branch Successfully",
-      data: addProduct,
-    });
+    return NextResponse.json(
+      {
+        message: "Request For Product Added Successfully",
+        data: addProduct,
+      },
+      { status: 200, headers: corsHeaders }
+    );
   } else {
-    return NextResponse.json({
-      error: "Product Added Failed. Please Try Again",
-    });
+    return NextResponse.json(
+      { error: "Request For Product Added Failed. Please Try Again" },
+      { status: 500, headers: corsHeaders }
+    );
   }
 }
 

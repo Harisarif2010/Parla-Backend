@@ -1,0 +1,169 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "PARLA API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/authentication/login": {
+      "post": {
+        "summary": "Login User",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string" },
+                  "role": { "type": "string" }
+                },
+                "required": ["email", "password","role"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful"
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    },
+
+    "/api/Admin/Branch/AddBranch": {
+      "post": {
+        "summary": "Add Branch",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": { "type": "string" },
+                  "branchName": { "type": "string" },
+                  "userName": { "type": "string" },
+                  "password": { "type": "string" },
+                  "title": { "type": "string" },
+                  "image": { "type": "string", "format": "binary" },
+                  "vat": { "type": "string" },
+                  "textAdministration": { "type": "string" },
+                  "category": { "type": "string" },
+                  "taxPlate": { "type": "string" },
+                  "registration": { "type": "string" },
+                  "license": { "type": "string" },
+                  "certificate": { "type": "string" },
+                  "paymentMethod": { "type": "string" },
+                  "freeCancelBefore": { "type": "string" },
+                  "country": { "type": "string" },
+                  "city": { "type": "string" },
+                  "district": { "type": "string" },
+                  "town": { "type": "string" },
+                  "street": { "type": "string" },
+                  "streetNo": { "type": "string" },
+                  "createdDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "authorizedName": { "type": "string" },
+                  "phone": { "type": "string" },
+                  "branchPhone": { "type": "string" },
+                  "branchEmail": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "location[type]": {
+                    "type": "string",
+                    "example": "Point"
+                  },
+                  "location[coordinates]": {
+                    "type": "string",
+                    "example": "[73.0479, 33.6844]",
+                    "description": "JSON string of [longitude, latitude]"
+                  },
+                  "location[address]": {
+                    "type": "string"
+                  },
+                  "workingHours": {
+                    "type": "string",
+                    "description": "JSON stringified array like [{\"day\":\"Monday\",\"from\":\"09:00\",\"to\":\"18:00\"}]"
+                  },
+                  "createdBy": { "type": "string" },
+                  "createdByModel": {
+                    "type": "string",
+                    "enum": ["Admin", "Branch"]
+                  }
+                },
+                "required": [
+                  "firstName",
+                  "branchName",
+                  "userName",
+                  "password",
+                  "title",
+                  "image",
+                  "vat",
+                  "textAdministration",
+                  "category",
+                  "paymentMethod",
+                  "freeCancelBefore",
+                  "country",
+                  "city",
+                  "district",
+                  "town",
+                  "street",
+                  "streetNo",
+                  "createdDate",
+                  "authorizedName",
+                  "phone",
+                  "branchPhone",
+                  "branchEmail",
+                  "createdBy",
+                  "createdByModel",
+                  "location[type]",
+                  "location[coordinates]"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Branch added successfully"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    }
+  },
+
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}

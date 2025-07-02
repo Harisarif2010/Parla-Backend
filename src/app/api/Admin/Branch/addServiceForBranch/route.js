@@ -14,7 +14,10 @@ export async function POST(req) {
       { status: 401, headers: corsHeaders }
     );
   }
+
   const body = await req.json();
+
+
 
   if (
     !body?.branchId ||
@@ -25,23 +28,60 @@ export async function POST(req) {
     !body?.gender ||
     !body?.price
   ) {
-    return NextResponse.json({
-      error: "Please Fill All Required Fields",
-      status: 400,
-      headers: corsHeaders,
-    });
+    return NextResponse.json(
+      {
+        error: "Please Fill All Required Fields",
+      },
+      { status: 400, headers: corsHeaders }
+    );
   }
+
+  // Discount fields check
+  if (body?.discount) {
+    if (
+      !body?.discountPrice ||
+      !body?.discountPercentage ||
+      !body?.discountStartDate ||
+      !body?.discountEndDate
+    ) {
+      return NextResponse.json(
+        {
+          error: "Please Fill All Required Fields For Discount",
+        },
+        { status: 400, headers: corsHeaders }
+      );
+    }
+  }
+
+  // OnlyBetweenTime fields check
+  if (body?.onlyBetweenTime) {
+    if (!body?.onlyBetweenStartTime || !body?.onlyBetweenEndTime) {
+      return NextResponse.json(
+        {
+          error: "Please Fill All Required Fields For Time Restriction",
+        },
+        { status: 400, headers: corsHeaders }
+      );
+    }
+  }
+
+  // Create the service
   const addService = await Service.create({ ...body });
-  await addService.save();
+
   if (addService) {
-    return NextResponse.json({
-      message: "Service Added For This Branch Successfully",
-      data: addService,
-      status: 200,
-    });
+    return NextResponse.json(
+      {
+        message: "Service Added For This Branch Successfully",
+        data: addService,
+      },
+      { status: 200, headers: corsHeaders }
+    );
   } else {
-    return NextResponse.json({
-      error: "Service Added Failed. Please Try Again",
-    });
+    return NextResponse.json(
+      {
+        error: "Service Add Failed. Please Try Again",
+      },
+      { status: 500, headers: corsHeaders }
+    );
   }
 }
