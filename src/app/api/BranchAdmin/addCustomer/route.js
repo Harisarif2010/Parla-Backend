@@ -25,7 +25,7 @@ export async function POST(req) {
     );
   }
   const body = await req.json();
-  // Check if the email already exists in the database
+  // Check if the email already exists in the databases
   const existingCustomer = await Customer.findOne({ email: body.email });
   if (existingCustomer) {
     return NextResponse.json({
