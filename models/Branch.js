@@ -50,6 +50,14 @@ const branchSchema = new mongoose.Schema(
     branchPhone: { type: String, required: true },
     branchEmail: { type: String, required: true },
     workingHours: [workingHoursSchema],
+    vacationDays: {
+      title: {
+        type: String,
+      },
+      date: {
+        type: Date,
+      },
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       refPath: "createdByModel",

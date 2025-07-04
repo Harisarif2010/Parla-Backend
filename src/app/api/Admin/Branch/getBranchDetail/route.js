@@ -21,6 +21,7 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const branchId = searchParams.get("branchId");
   const type = searchParams.get("type");
+  const types = searchParams.get("types");
   const category = searchParams.get("category");
   //   const page = searchParams.get("page");
   //   const limit = searchParams.get("limit");
@@ -48,6 +49,9 @@ export async function GET(req) {
   // Only include category if model is Service
   if (type === "service" && category) {
     matchStage.category = category;
+  }
+  if (type === "product" && types) {
+    matchStage.type = types;
   }
   const result = await model.aggregate([
     {

@@ -1,5 +1,13 @@
 const mongoose = require("mongoose");
 
+const workingHoursSchema = new mongoose.Schema(
+  {
+    day: { type: String, required: true }, // Example: "Monday"
+    from: { type: String, required: true }, // Example: "09:00 AM"
+    to: { type: String, required: true }, // Example: "05:00 PM"
+  },
+  { _id: false }
+);
 const employeeSchema = new mongoose.Schema(
   {
     firstName: { type: String, required: true },
@@ -87,6 +95,8 @@ const employeeSchema = new mongoose.Schema(
       type: [String],
       required: true,
     },
+    workingHours: [workingHoursSchema],
+
     createdByRole: {
       type: String,
       enum: ["Branch", "Admin"],

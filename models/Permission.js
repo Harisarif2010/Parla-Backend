@@ -1,34 +1,118 @@
 const mongoose = require("mongoose");
 
-// Define the schema for a post
 const permissionSchema = new mongoose.Schema(
   {
-    presonalDetail: {
-      type: String,
-      default: null, // Optional field for an image URL
+    news: {
+      see: {
+        type: Boolean,
+        default: false,
+      },
+      edit: {
+        type: Boolean,
+        default: false,
+      },
     },
-    passwordAndSecurity: {
-      type: String,
-      default: null, // Optional field for an image URL
+    appointment: {
+      see: {
+        type: Boolean,
+        default: false,
+      },
+      edit: {
+        type: Boolean,
+        default: false,
+      },
     },
-    InformationAndPermission: {
-      type: String,
-      default: null, // Optional field for an image URL
+    message: {
+      see: {
+        type: Boolean,
+        default: false,
+      },
+      edit: {
+        type: Boolean,
+        default: false,
+      },
     },
-    Payment: {
-      type: String,
-      default: null, // Optional field for an image URL
+    notification: {
+      see: {
+        type: Boolean,
+        default: false,
+      },
+      edit: {
+        type: Boolean,
+        default: false,
+      },
     },
-    branchId: {
+    finance: {
+      see: {
+        type: Boolean,
+        default: false,
+      },
+      edit: {
+        type: Boolean,
+        default: false,
+      },
+    },
+    statistics: {
+      see: {
+        type: Boolean,
+        default: false,
+      },
+      edit: {
+        type: Boolean,
+        default: false,
+      },
+    },
+    customer: {
+      see: {
+        type: Boolean,
+        default: false,
+      },
+      edit: {
+        type: Boolean,
+        default: false,
+      },
+    },
+    branches: {
+      see: {
+        type: Boolean,
+        default: false,
+      },
+      edit: {
+        type: Boolean,
+        default: false,
+      },
+    },
+    products: {
+      see: {
+        type: Boolean,
+        default: false,
+      },
+      edit: {
+        type: Boolean,
+        default: false,
+      },
+    },
+    maps: {
+      see: {
+        type: Boolean,
+        default: false,
+      },
+      edit: {
+        type: Boolean,
+        default: false,
+      },
+    },
+    employeeId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Branch",
+      ref: "Employee",
     },
   },
+
   {
-    timestamps: true, // Automatically adds createdAt and updatedAt fields
+    timestamps: true,
   }
 );
-// Check if the model is already compiled, if not, compile it.
+
 const Permission =
   mongoose.models.Permission || mongoose.model("Permission", permissionSchema);
 

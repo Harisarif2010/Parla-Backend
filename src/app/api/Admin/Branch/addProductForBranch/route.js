@@ -42,8 +42,31 @@ export async function POST(req) {
   const discountStartDate = formData.get("discountStartDate");
   const discountEndDate = formData.get("discountEndDate");
 
-  if (type === "new")
-  {
+  if (type === "new") {
+    const obj = [];
+    if (!title) obj.push("title");
+    if (!category) obj.push("category");
+    if (!branchId) obj.push("branchId");
+    if (!productName) obj.push("productName");
+    if (!productBrand) obj.push("productBrand");
+    if (!productCode) obj.push("productCode");
+    if (!gender) obj.push("gender");
+    if (!inventory) obj.push("inventory");
+    if (!purchaseQuantity) obj.push("purchaseQuantity");
+    if (!warningAlert) obj.push("warningAlert");
+    if (!purchasePricePerPiece) obj.push("purchasePricePerPiece");
+    if (!purchaseFrom) obj.push("purchaseFrom");
+    if (!purchaseDate) obj.push("purchaseDate");
+    if (!sellPricePerPiece) obj.push("sellPricePerPiece");
+    if (!invoice) obj.push("invoice");
+
+    if (obj.length > 0) {
+      console.log(obj);
+      return NextResponse.json(
+        { error: "All fields are required" },
+        { status: 400 }
+      );
+    }
     if (
       !title ||
       !category ||
@@ -66,9 +89,7 @@ export async function POST(req) {
         { status: 400 }
       );
     }
-  
-  } else if (type === "inventory")
-  {
+  } else if (type === "inventory") {
     if (
       !title ||
       !category ||
@@ -86,7 +107,7 @@ export async function POST(req) {
       );
     }
   }
-  
+
   if (discount === "true") {
     if (!discountPrice || !discountStartDate || !discountEndDate) {
       return NextResponse.json(
@@ -96,8 +117,8 @@ export async function POST(req) {
     }
   }
 
-  if (type === "new")
-  {
+  let invoiceUrl = "";
+  if (type === "new") {
     // Upload the image to S3
     const bytes = await invoice.arrayBuffer();
     const buffer = Buffer.from(bytes);
@@ -112,10 +133,8 @@ export async function POST(req) {
     };
 
     await s3.send(new PutObjectCommand(params));
-    const invoiceUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
+    invoiceUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
   }
-
- 
 
   const addProduct = await Product.create({
     type,
@@ -134,10 +153,10 @@ export async function POST(req) {
     purchaseDate,
     sellPricePerPiece,
     invoice: invoiceUrl,
-    discount,
-    discountPrice,
-    discountStartDate,
-    discountEndDate,
+    discount: discount === "true" ? true : false,
+    discountPrice: discount === "true" ? discountPrice : null,
+    discountStartDate: discount === "true" ? discountStartDate : null,
+    discountEndDate: discount === "true" ? discountEndDate : null,
   });
   await addProduct.save();
   if (addProduct) {

@@ -41,7 +41,7 @@ export async function POST(req) {
   const otp = formData.get("otp");
   const lat = parseFloat(formData.get("lat"));
   const long = parseFloat(formData.get("long"));
-  const address = formData.get("address");  
+  const address = formData.get("address");
   const missingFields = [];
 
   if (!firstName) missingFields.push("firstName");
@@ -68,7 +68,6 @@ export async function POST(req) {
       }
     );
   }
-  
 
   if (type === "verifyEmail") {
     if (!password || !otp) {
@@ -88,7 +87,6 @@ export async function POST(req) {
       password: password.trim(),
       verified: false,
     });
-    
 
     if (!checkOtp) {
       return NextResponse.json(
@@ -151,7 +149,7 @@ export async function POST(req) {
       phone,
       branchId,
       branchNote,
-      createdBy,  
+      createdBy,
       createdByModel: Model,
       location,
       password: hashP,
