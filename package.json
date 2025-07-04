@@ -19,8 +19,7 @@
     "next": "15.3.2",
     "nodemailer": "^7.0.3",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "swagger-ui-react": "^5.26.0"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
