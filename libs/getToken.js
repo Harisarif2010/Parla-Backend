@@ -2,11 +2,14 @@ import jwt from "jsonwebtoken";
 
 export async function getToken(request) {
   const authHeader = request.headers.get("Authorization");
+  // console.log(authHeader);
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return { error: "No Token Provided" };
   }
   const token = authHeader.split(" ")[1];
+  // console.log(token);
+
   try {
     const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET);
     return decoded;

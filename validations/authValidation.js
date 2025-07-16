@@ -108,5 +108,6 @@ export const formDataSchema = Joi.object({
 
   createdByRoles: Joi.string().required(),
   branchId: Joi.string().required(),
+  // workingHours: Joi.string().required(),
 });
 

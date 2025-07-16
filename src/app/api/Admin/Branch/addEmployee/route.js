@@ -37,6 +37,7 @@ export async function POST(req) {
   const commission = formData.get("commission");
   const commissionPercentage = formData.get("commissionPercentage");
   const monthlyWageSlip = formData.get("monthlyWageSlip");
+  const workingHours = formData.get("workingHours");
   const gender = formData.get("gender");
   const personalType = formData.get("personalType");
   const serviceType = formData.get("serviceType");
@@ -58,6 +59,8 @@ export async function POST(req) {
   responsibilityArray = JSON.parse(responsibility);
   let monthlyWageSlipArrays;
   monthlyWageSlipArrays = JSON.parse(monthlyWageSlip);
+  let workingHoursArray;
+  workingHoursArray = JSON.parse(workingHours);
 
   let newCreatedByRole = "";
   if (createdByRoles === "admin") {
@@ -182,7 +185,6 @@ export async function POST(req) {
       });
     }
   }
-  
 
   // Upload the cv Slip to S3
   const bytesCv = await cv.arrayBuffer();
@@ -301,6 +303,7 @@ export async function POST(req) {
     cv: cvUrl,
     hiredBy,
     responsibility: responsibilityArray,
+    workingHours: workingHoursArray,
     createdByRole: newCreatedByRole,
     branchId,
   });

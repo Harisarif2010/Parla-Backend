@@ -93,6 +93,7 @@ export async function POST(req) {
       {
         message: "Login Successful",
         token: checkUser.token,
+        userData: role === "customer" ? checkUser : null,
         data: {
           role,
           id: checkUser._id,

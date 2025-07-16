@@ -96,7 +96,6 @@ const employeeSchema = new mongoose.Schema(
       required: true,
     },
     workingHours: [workingHoursSchema],
-
     createdByRole: {
       type: String,
       enum: ["Branch", "Admin"],

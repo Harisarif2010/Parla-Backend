@@ -5,8 +5,8 @@ import { corsHeaders } from "../../../../../../libs/corsHeader";
 import Product from "../../../../../../models/Product"; // Make sure Product model is imported
 
 export async function POST(req) {
-  await connectMongoDB();
 
+  await connectMongoDB();
   const token = await getToken(req);
   if (!token || token.error) {
     return NextResponse.json(

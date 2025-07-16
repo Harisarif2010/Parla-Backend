@@ -60,9 +60,10 @@ export async function POST(req) {
         }
       );
     }
+
     // Update the user based on email and role
     const update = await UserModel.updateOne(
-      { email, role }, // filter
+      { email }, // filter
       { password: hashPassword } // update
     );
 
