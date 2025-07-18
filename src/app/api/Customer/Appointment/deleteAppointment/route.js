@@ -22,16 +22,37 @@ export async function DELETE(req) {
   const { searchParams } = new URL(req.url);
   const appointmentId = searchParams.get("appointmentId");
 
-  const deleteAppointment = await Appointment.findByIdAndDelete(appointmentId);
-  if (!deleteAppointment) {
+  // search the appointment by id
+  const appointment = await Appointment.findById(appointmentId);
+  if (!appointment) {
     return NextResponse.json(
-      { error: "Appointment not delete" },
+      { error: "Appointment not found" },
       {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
   }
+
+  if (
+    appointment.status === "completed" ||
+    appointment.status === "confirmed"
+  ) {
+    return NextResponse.json(
+      {
+        error: `Appointment already ${appointment?.status}. You can't cancel this appointment.`,
+      },
+      {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
+  }
+  // cancel the appointment
+  const cancelAppointment = await appointment.updateOne({
+    status: "cancelled",
+  });
+
   // ✅ Create Notification for the deleted appointment
   await Notification.create({
     title: "Appointment Deleted",
