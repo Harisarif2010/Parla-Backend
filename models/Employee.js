@@ -31,7 +31,10 @@ const employeeSchema = new mongoose.Schema(
       type: [
         {
           fileUrl: { type: String, required: true },
-          uploadedAt: { type: Date, required: true }, // user-provided date
+          uploadedAt: {
+            type: Date,
+            default: Date.now, // Automatically set when document is created
+          },
         },
       ],
       required: false,

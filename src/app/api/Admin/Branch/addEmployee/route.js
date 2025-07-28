@@ -36,7 +36,7 @@ export async function POST(req) {
   const paymentDate = formData.get("paymentDate");
   const commission = formData.get("commission");
   const commissionPercentage = formData.get("commissionPercentage");
-  const monthlyWageSlip = formData.get("monthlyWageSlip");
+  const monthlyWageSlip = formData.getAll("monthlyWageSlip");
   const workingHours = formData.get("workingHours");
   const gender = formData.get("gender");
   const personalType = formData.get("personalType");
@@ -57,8 +57,6 @@ export async function POST(req) {
 
   let responsibilityArray;
   responsibilityArray = JSON.parse(responsibility);
-  let monthlyWageSlipArrays;
-  monthlyWageSlipArrays = JSON.parse(monthlyWageSlip);
   let workingHoursArray;
   workingHoursArray = JSON.parse(workingHours);
 
@@ -151,40 +149,61 @@ export async function POST(req) {
   await s3.send(new PutObjectCommand(paramsImage));
   const imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
 
-  let monthlyWageSlipArray = [];
-  if (monthlyWageSlipArrays?.length > 0) {
-    for (let i = 0; i < monthlyWageSlipArrays.length; i++) {
-      const slip = monthlyWageSlipArrays[i]; // get each file object (not whole array)
+  const imageUrls = [];
+  for (const imageFile of monthlyWageSlip) {
+    // You can convert each File to a buffer or save it as needed
+    // ! Store Image in S3
+    const bytes = await imageFile.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    const fileName = `${Date.now()}-${imageFile.name}`;
 
-      if (!slip.fileUrl || typeof slip.fileUrl !== "string") continue;
+    const params = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: fileName, // optional folder
+      Body: buffer,
+      ContentType: imageFile.type,
+      // ACL: "public-read",
+    };
 
-      // Optionally fetch the file and convert it to buffer
-      const res = await fetch(slip.fileUrl);
-      const bytesSlip = await res.arrayBuffer();
-      const bufferSlip = Buffer.from(bytesSlip);
-
-      const fileNameSlip = `${Date.now()}-${Math.random()
-        .toString(36)
-        .substring(2)}.pdf`;
-
-      const params = {
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: fileNameSlip,
-        Body: bufferSlip,
-        ContentType: "application/pdf",
-      };
-
-      await s3.send(new PutObjectCommand(params));
-
-      const salaryUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileNameSlip}`;
-      const uploadedAt = slip.uploadedAt || dayjs().format("DD-MM-YYYY");
-
-      monthlyWageSlipArray.push({
-        fileUrl: salaryUrl,
-        uploadedAt,
-      });
-    }
+    await s3.send(new PutObjectCommand(params));
+    const imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
+    imageUrls.push({
+      fileUrl: imageUrl,
+      uploadedAt: new Date(),
+    });
   }
+  // let monthlyWageSlipArray = [];
+  // if (monthlyWageSlipArrays?.length > 0) {
+  //   for (let i = 0; i < monthlyWageSlipArrays.length; i++) {
+  //     const slip = monthlyWageSlipArrays[i]; // get each file object (not whole array)
+
+  //     // if (!slip.fileUrl || typeof slip.fileUrl !== "string") continue;
+
+  //     // Optionally fetch the file and convert it to buffer
+  //     const res = await fetch(slip);
+  //     const bytesSlip = await res.arrayBuffer();
+  //     const bufferSlip = Buffer.from(bytesSlip);
+
+  //     const fileNameSlip = `${Date.now()}-${Math.random()
+  //       .toString(36)
+  //       .substring(2)}.pdf`;
+
+  //     const params = {
+  //       Bucket: process.env.AWS_BUCKET_NAME,
+  //       Key: fileNameSlip,
+  //       Body: bufferSlip,
+  //       ContentType: "application/pdf",
+  //     };
+
+  //     await s3.send(new PutObjectCommand(params));
+
+  //     const salaryUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileNameSlip}`;
+
+  //     monthlyWageSlipArray.push({
+  //       fileUrl: salaryUrl,
+  //     });
+  //   }
+  // }
 
   // Upload the cv Slip to S3
   const bytesCv = await cv.arrayBuffer();
@@ -288,7 +307,7 @@ export async function POST(req) {
     paymentDate,
     commission,
     commissionPercentage,
-    monthlyWageSlip: monthlyWageSlipArray,
+    monthlyWageSlip: imageUrls,
     gender,
     personalType,
     serviceType,

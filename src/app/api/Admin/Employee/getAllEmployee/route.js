@@ -24,80 +24,33 @@ export async function GET(req) {
     const limit = parseInt(searchParams.get("limit") || "10", 10);
     const skip = (page - 1) * limit;
 
-    // const allEmployees = await Employee.aggregate([
-    //   // Stage 2: Lookup for admins
-    //   {
-    //     $lookup: {
-    //       from: "admins",
-    //       localField: "createdById",
-    //       foreignField: "_id",
-    //       as: "createdByAdmin",
-    //     },
-    //   },
-    //   // Stage 3: Lookup for branches
-    //   {
-    //     $lookup: {
-    //       from: "branches",
-    //       localField: "createdById",
-    //       foreignField: "_id",
-    //       as: "createdByBranch",
-    //     },
-    //   },
-    //   // Stage 4: Merge the correct createdBy based on role
-    //   {
-    //     $addFields: {
-    //       createdBy: {
-    //         $cond: {
-    //           if: { $eq: ["$createdByRole", "admin"] },
-    //           then: { $arrayElemAt: ["$createdByAdmin", 0] },
-    //           else: { $arrayElemAt: ["$createdByBranch", 0] },
-    //         },
-    //       },
-    //     },
-    //   },
-    //   // Stage 5: Remove unnecessary fields
-    //   {
-    //     $project: {
-    //       createdByAdmin: 0,
-    //       createdByBranch: 0,
-    //       password: 0, // or hide any other sensitive fields
-    //     },
-    //   },
-    //   // Stage 6: Sort (optional but common with pagination)
-    //   {
-    //     $sort: { createdAt: -1 }, // newest first
-    //   },
-    //   // Stage 7: Skip
-    //   {
-    //     $skip: skip,
-    //   },
-    //   // Stage 8: Limit
-    //   {
-    //     $limit: limit,
-    //   },
-    // ]);
-
     const allEmployees = await Employee.aggregate([
       { $skip: skip },
       { $limit: limit },
       {
         $project: {
           _id: 1,
-          fullName: 1,
+          firstName: 1,
+          lastName: 1,
           phone: 1,
-          // Add or remove fields you need, set to 1 to include, 0 to exclude
         },
       },
     ]);
     const allEmployeesCount = await Employee.countDocuments();
 
-    return NextResponse.json({
-      message: "All Employees retrieved successfully",
-      data: {
-        employees: allEmployees,
-        totalEmployees: allEmployeesCount,
+    return NextResponse.json(
+      {
+        message: "All Employees retrieved successfully",
+        data: {
+          employees: allEmployees,
+          totalEmployees: allEmployeesCount,
+        },
       },
-    });
+      {
+        status: 200,
+        headers: corsHeaders,
+      }
+    );
   } catch (error) {
     console.error("Error in get all Employees:", error);
     return NextResponse.json(

@@ -30,7 +30,6 @@ export async function POST(req) {
         }
       );
     }
-
     // Determine which model to use based on role
     let UserModel;
     if (role === "admin") {
@@ -50,12 +49,10 @@ export async function POST(req) {
         }
       );
     }
-
     // Check if the user exists
     const checkUser = await UserModel.findOne({
       email,
     });
-
     if (!checkUser) {
       return NextResponse.json(
         { error: "Invalid email" },
@@ -93,7 +90,7 @@ export async function POST(req) {
       {
         message: "Login Successful",
         token: checkUser.token,
-        userData: role === "customer" ? checkUser : null,
+        userData: checkUser,
         data: {
           role,
           id: checkUser._id,

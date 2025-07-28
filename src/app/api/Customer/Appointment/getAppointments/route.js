@@ -34,6 +34,7 @@ export async function GET(req) {
       {
         $project: {
           _id: 1,
+          employeeId: 1,
           appointmentNo: 1,
           serviceName: 1,
           serviceMints: 1,

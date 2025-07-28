@@ -8,20 +8,18 @@ import Branch from "../../../../../../models/Branch";
 export async function POST(req) {
   try {
     await connectMongoDB();
-
-    // const token = await getToken(req);
-    // if (!token || token.error) {
-    //   return NextResponse.json(
-    //     { error: token?.error || "Unauthorized Access" },
-    //     {
-    //       status: 401,
-    //       headers: { ...corsHeaders, "Content-Type": "application/json" },
-    //     }
-    //   );
-    // }
-
+    const token = await getToken(req);
+    if (!token || token.error) {
+      return NextResponse.json(
+        { error: token?.error || "Unauthorized Access" },
+        {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
     const data = await req.json();
-    const { branchId, type, vacationDays } = data;
+    const { branchId, type, vacationDays, workingHours } = data;
     if (!branchId) {
       return NextResponse.json(
         { error: "Branch ID is required" },
@@ -31,10 +29,9 @@ export async function POST(req) {
         }
       );
     }
-
     // GET the Working Hours of this Branch
     if (type === "info") {
-      const allEmployees = await Branch.aggregate([
+      const getWorkingHours = await Branch.aggregate([
         {
           $match: {
             _id: new mongoose.Types.ObjectId(branchId),
@@ -49,7 +46,7 @@ export async function POST(req) {
 
       return NextResponse.json({
         message: "Branch Working Hours Retrieved Successfully",
-        data: allEmployees,
+        data: getWorkingHours,
       });
     }
     // GET the Address of this Branch
@@ -79,9 +76,9 @@ export async function POST(req) {
         data: allEmployees,
       });
     }
-    // GET the Address of this Branch
+    // Get of this Branch
     if (type === "vacation") {
-      const allEmployees = await Branch.aggregate([
+      const getVacation = await Branch.aggregate([
         {
           $match: {
             _id: new mongoose.Types.ObjectId(branchId),
@@ -96,18 +93,52 @@ export async function POST(req) {
 
       return NextResponse.json({
         message: "Branch Vacation Days Retrieved Successfully",
-        data: allEmployees,
+        data: getVacation,
       });
     }
     // ADD the Vacation Days of this employee
     if (type === "addVacation") {
       const employee = await Branch.findById(branchId);
-      const add = (employee.vacationDays = vacationDays);
+      if (employee?.vacationDays?.length === 0) {
+        employee?.vacationDays?.push(vacationDays);
+        await employee.save();
+        return NextResponse.json({
+          message: "Branch Vacation Days Saved Successfully",
+          data: employee?.vacationDays,
+        });
+      }
+      employee?.vacationDays?.push(vacationDays);
 
       await employee.save();
       return NextResponse.json({
         message: "Branch Vacation Days Saved Successfully",
         data: employee?.vacationDays,
+      });
+    }
+    // ADD the Working Hours of this Branch
+    if (type === "addWorkingHours") {
+      const employee = await Branch.findById(branchId);
+      if (!employee.workingHours) {
+        employee.workingHours = [];
+      }
+      // Check if the day already exists
+      const existingIndex = employee?.workingHours?.findIndex(
+        (item) => item.day === workingHours?.day
+      );
+
+      if (existingIndex !== -1) {
+        // Replace existing day
+        employee.workingHours[existingIndex] = workingHours;
+      } else {
+        // Add new day
+        employee.workingHours.push(workingHours);
+      }
+
+      await employee.save();
+
+      return NextResponse.json({
+        message: "Branch Working Hours Saved Successfully",
+        data: employee.workingHours,
       });
     }
   } catch (error) {
