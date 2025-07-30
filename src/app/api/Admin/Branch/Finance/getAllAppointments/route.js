@@ -1,20 +1,21 @@
 import { NextResponse } from "next/server";
-import connectMongoDB from "../../../../../../libs/dbConnect";
-import { getToken } from "../../../../../../libs/getToken";
-import { corsHeaders } from "../../../../../../libs/corsHeader";
-import Appointment from "../../../../../../models/Appointment";
+import connectMongoDB from "../../../../../../../libs/dbConnect";
+import { getToken } from "../../../../../../../libs/getToken";
+import { corsHeaders } from "../../../../../../../libs/corsHeader";
+import Appointment from "../../../../../../../models/Appointment";
 import mongoose from "mongoose";
+
 
 export async function GET(req) {
   await connectMongoDB();
 
-  //   const token = await getToken(req);
-  //   if (!token || token.error) {
-  //     return NextResponse.json(
-  //       { error: token?.error || "Unauthorized Access" },
-  //       { status: 401, headers: corsHeaders }
-  //     );
-  //   }
+    const token = await getToken(req);
+    if (!token || token.error) {
+      return NextResponse.json(
+        { error: token?.error || "Unauthorized Access" },
+        { status: 401, headers: corsHeaders }
+      );
+    }
   const { searchParams } = new URL(req.url);
   const branchId = searchParams.get("branchId");
   const type = searchParams.get("type");
@@ -37,7 +38,8 @@ export async function GET(req) {
         branchId: new mongoose.Types.ObjectId(branchId),
       });
       const length = allAppointments.length;
-      const getStatus = await Appointment.aggregate([
+      const statuses = ["pending", "confirmed", "completed", "cancelled"];
+      const statusCounts = await Appointment.aggregate([
         {
           $group: {
             _id: "$status",
@@ -45,9 +47,21 @@ export async function GET(req) {
           },
         },
       ]);
+
+      // Convert to a map for easier access
+      const statusMap = {};
+      statusCounts.forEach((item) => {
+        statusMap[item._id] = item.count;
+      });
+
+      // Fill in 0 for missing statuses
+      const finalCounts = statuses.map((status) => ({
+        status,
+        count: statusMap[status] || 0,
+      }));
       result = {
         appointmentLength: length,
-        status: getStatus,
+        status: finalCounts,
       };
     }
     return NextResponse.json(
@@ -56,7 +70,7 @@ export async function GET(req) {
         data: result,
       },
       {
-        status: 400,
+        status: 200,
         header: corsHeaders,
       }
     );
