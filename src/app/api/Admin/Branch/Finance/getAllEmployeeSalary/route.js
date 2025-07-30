@@ -44,7 +44,9 @@ export async function GET(req) {
      {
        $project: {
          _id: 1,
-         salaryAmount: 1,
+         firstName: 1,
+         lastName: 1,
+         salarayAmount: 1,
          commissionPercentage: 1,
        },
      },
