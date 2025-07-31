@@ -7,17 +7,17 @@ import Offer from "../../../../../../models/Offer";
 export async function POST(req) {
   await connectMongoDB();
 
-  // const token = await getToken(req);
-  // if (!token || token.error) {
-  //   return NextResponse.json(
-  //     { error: token?.error || "Unauthorized Access" },
-  //     { status: 401, headers: corsHeaders }
-  //   );
-  // }
+  const token = await getToken(req);
+  if (!token || token.error) {
+    return NextResponse.json(
+      { error: token?.error || "Unauthorized Access" },
+      { status: 401, headers: corsHeaders }
+    );
+  }
   const body = await req.json(); // Get the request body
   const {
-    // type,
-    branchId,
+    // branchId,
+    type,
     name,
     discountType,
     discount,
@@ -33,12 +33,9 @@ export async function POST(req) {
   } = body;
 
   let missingFields = [];
-  if (!branchId) {
-    missingFields.push("branchId");
-  }
-  // if (!type) {
-  //   missingFields.push("type");
-  // }
+    if (!type) {
+      missingFields.push("type");
+    }
   if (!name) {
     missingFields.push("name");
   }
@@ -87,7 +84,7 @@ export async function POST(req) {
   await addOffer.save();
   if (addOffer) {
     return NextResponse.json({
-      message: "Offer Added For Branch Successfully",
+      message: "Offer Added From Admin Successfully",
       data: addOffer,
     });
   } else {

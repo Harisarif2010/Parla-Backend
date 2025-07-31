@@ -16,6 +16,7 @@ const offerSchema = new mongoose.Schema(
     branchId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Branch",
+      required: false,
     },
     discountType: {
       type: String,
@@ -57,6 +58,11 @@ const offerSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    type: {
+      type: String,
+      enum: ["post", "offer"],
+      default: "offer",
+    },
     createdDate: {
       type: Date,
       default: null,
@@ -67,7 +73,6 @@ const offerSchema = new mongoose.Schema(
   }
 );
 // Check if the model is already compiled, if not, compile it.
-const Offer =
-  mongoose.models.Offer || mongoose.model("Offer", offerSchema);
+const Offer = mongoose.models.Offer || mongoose.model("Offer", offerSchema);
 
 export default Offer;

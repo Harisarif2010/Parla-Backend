@@ -4,6 +4,7 @@ import { getToken } from "../../../../../../libs/getToken";
 import Post from "../../../../../../models/Post";
 import { corsHeaders } from "../../../../../../libs/corsHeader";
 import LikesOnPost from "../../../../../../models/LikesOnPost";
+import Offer from "../../../../../../models/Offer";
 
 export async function GET(req) {
   try {
@@ -33,89 +34,6 @@ export async function GET(req) {
       { $count: "total" },
     ]);
     const total = totalCountAgg[0]?.total || 0;
-    // Step 2: Get paginated posts
-    // const posts = await Post.aggregate([
-    //   {
-    //     $facet: {
-    //       adminPosts: [
-    //         { $match: { userModel: "Admin" } },
-    //         {
-    //           $lookup: {
-    //             from: "admins",
-    //             let: { uid: "$userId" },
-    //             pipeline: [
-    //               { $match: { $expr: { $eq: ["$_id", "$$uid"] } } },
-    //               { $project: { fullName: 1, image: 1, _id: 1 } },
-    //             ],
-    //             as: "user",
-    //           },
-    //         },
-    //       ],
-    //       branchPosts: [
-    //         { $match: { userModel: "Branch" } },
-    //         {
-    //           $lookup: {
-    //             from: "branches",
-    //             let: { uid: "$userId" },
-    //             pipeline: [
-    //               { $match: { $expr: { $eq: ["$_id", "$$uid"] } } },
-    //               { $project: { fullName: 1, image: 1, _id: 1 } },
-    //             ],
-    //             as: "user",
-    //           },
-    //         },
-    //       ],
-    //     },
-    //   },
-    //   {
-    //     $project: {
-    //       allPosts: { $concatArrays: ["$adminPosts", "$branchPosts"] },
-    //     },
-    //   },
-    //   { $unwind: "$allPosts" },
-    //   { $replaceRoot: { newRoot: "$allPosts" } },
-
-    //   // 🔥 Add like count using $lookup
-    //   {
-    //     $lookup: {
-    //       from: "likesonposts",
-    //       let: { postId: "$_id" },
-    //       pipeline: [
-    //         { $match: { $expr: { $eq: ["$postId", "$$postId"] } } },
-    //         { $count: "count" },
-    //       ],
-    //       as: "likeData",
-    //     },
-    //   },
-    //   {
-    //     $addFields: {
-    //       likeCount: {
-    //         $cond: [
-    //           { $gt: [{ $size: "$likeData" }, 0] },
-    //           { $arrayElemAt: ["$likeData.count", 0] },
-    //           0,
-    //         ],
-    //       },
-    //     },
-    //   },
-
-    //   {
-    //     $project: {
-    //       _id: 1,
-    //       image: 1,
-    //       title: 1,
-    //       description: 1,
-    //       createdAt: 1,
-    //       likeCount: 1,
-    //       // optionally include user info
-    //       // userModel: 1,
-    //       // user: 1,
-    //     },
-    //   },
-    //   { $skip: skip },
-    //   { $limit: limit },
-    // ]);
-
     const posts = await Post.aggregate([
       {
         $facet: {
@@ -191,8 +109,7 @@ export async function GET(req) {
       { $skip: skip },
       { $limit: limit },
     ]);
-    
-    
+
     // Step 3: Calculate pagination meta
     const has_more = page * limit < total;
     const next_page = has_more ? page + 1 : null;
