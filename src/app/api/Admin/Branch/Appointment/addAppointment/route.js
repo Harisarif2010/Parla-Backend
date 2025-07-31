@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
-import { getToken } from "../../../../../../libs/getToken";
-import { corsHeaders } from "../../../../../../libs/corsHeader";
-import connectMongoDB from "../../../../../../libs/dbConnect";
-import Appointment from "../../../../../../models/Appointment";
-import mongoose from "mongoose";
-import Notification from "../../../../../../models/Notification";
+import connectMongoDB from "../../../../../../../libs/dbConnect";
+import { getToken } from "../../../../../../../libs/getToken";
+import { corsHeaders } from "../../../../../../../libs/corsHeader";
+import Appointment from "../../../../../../../models/Appointment";
+import Notification from "../../../../../../../models/Notification";
 
 export async function POST(req) {
   await connectMongoDB();

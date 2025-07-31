@@ -4,17 +4,18 @@ import mongoose from "mongoose";
 import Appointment from "../../../../../../../models/Appointment";
 import { corsHeaders } from "../../../../../../../libs/corsHeader";
 import { getToken } from "../../../../../../../libs/getToken";
+import connectMongoDB from "../../../../../../../libs/dbConnect";
 
 export async function GET(req) {
   try {
     await connectMongoDB();
-    const token = await getToken(req);
-    if (!token || token.error) {
-      return NextResponse.json(
-        { error: token?.error || "Unauthorized Access" },
-        { status: 401, headers: corsHeaders }
-      );
-    }
+    // const token = await getToken(req);
+    // if (!token || token.error) {
+    //   return NextResponse.json(
+    //     { error: token?.error || "Unauthorized Access" },
+    //     { status: 401, headers: corsHeaders }
+    //   );
+    // }
 
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get("page")) || 1;
@@ -126,12 +127,10 @@ export async function GET(req) {
         for (const schedule of emp.workingHours || []) {
           if (schedule?.from && schedule?.to && schedule?.day) {
             const allSlots = generateSlots(schedule.from, schedule.to);
-               
 
             const today = new Date();
-            
+
             const targetDayIndex = days.indexOf(schedule.day);
-           
 
             for (let i = 0; i < 7; i++) {
               const checkDate = new Date(
@@ -139,7 +138,6 @@ export async function GET(req) {
                 today.getMonth(),
                 today.getDate() + i
               );
-                
 
               if (checkDate.getDay() === targetDayIndex) {
                 const slotDateStr = `${checkDate.getFullYear()}-${(
@@ -151,12 +149,11 @@ export async function GET(req) {
                   .toString()
                   .padStart(2, "0")}`;
 
-
-              const employeeAppointments = await Appointment.find({
-                employeeId: emp._id.toString(), // 👈 fixed!
-                status: { $in: ["pending", "confirmed"] },
-                bookingDate: slotDateStr,
-              });
+                const employeeAppointments = await Appointment.find({
+                  employeeId: emp._id.toString(), // 👈 fixed!
+                  status: { $in: ["pending", "confirmed"] },
+                  bookingDate: slotDateStr,
+                });
 
                 const bookedSlots = employeeAppointments
                   .map((appt) => appt.bookingTime?.trim())
@@ -186,40 +183,40 @@ export async function GET(req) {
         return {
           ...emp,
           availableSlots,
-          allSlots: (emp.workingHours || []).flatMap((schedule) => {
-            const slotsPerDay = [];
-            if (schedule?.from && schedule?.to && schedule?.day) {
-              const allSlots = generateSlots(schedule.from, schedule.to);
-              const today = new Date();
-              const targetDayIndex = days.indexOf(schedule.day);
+          // allSlots: (emp.workingHours || []).flatMap((schedule) => {
+          //   const slotsPerDay = [];
+          //   if (schedule?.from && schedule?.to && schedule?.day) {
+          //     const allSlots = generateSlots(schedule.from, schedule.to);
+          //     const today = new Date();
+          //     const targetDayIndex = days.indexOf(schedule.day);
 
-              for (let i = 0; i < 7; i++) {
-                const checkDate = new Date(
-                  today.getFullYear(),
-                  today.getMonth(),
-                  today.getDate() + i
-                );
+          //     for (let i = 0; i < 7; i++) {
+          //       const checkDate = new Date(
+          //         today.getFullYear(),
+          //         today.getMonth(),
+          //         today.getDate() + i
+          //       );
 
-                if (checkDate.getDay() === targetDayIndex) {
-                  const slotDateStr = `${checkDate.getFullYear()}-${(
-                    checkDate.getMonth() + 1
-                  )
-                    .toString()
-                    .padStart(2, "0")}-${checkDate
-                    .getDate()
-                    .toString()
-                    .padStart(2, "0")}`;
+          //       if (checkDate.getDay() === targetDayIndex) {
+          //         const slotDateStr = `${checkDate.getFullYear()}-${(
+          //           checkDate.getMonth() + 1
+          //         )
+          //           .toString()
+          //           .padStart(2, "0")}-${checkDate
+          //           .getDate()
+          //           .toString()
+          //           .padStart(2, "0")}`;
 
-                  slotsPerDay.push({
-                    day: schedule.day,
-                    date: slotDateStr,
-                    slots: allSlots,
-                  });
-                }
-              }
-            }
-            return slotsPerDay;
-          }),
+          //         slotsPerDay.push({
+          //           day: schedule.day,
+          //           date: slotDateStr,
+          //           slots: allSlots,
+          //         });
+          //       }
+          //     }
+          //   }
+          //   return slotsPerDay;
+          // }),
         };
       })
     );

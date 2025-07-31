@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import connectMongoDB from "../../../../../../libs/dbConnect";
-import { getToken } from "../../../../../../libs/getToken";
-import { corsHeaders } from "../../../../../../libs/corsHeader";
-import Appointment from "../../../../../../models/Appointment";
+import connectMongoDB from "../../../../../../../libs/dbConnect";
+import { getToken } from "../../../../../../../libs/getToken";
+import { corsHeaders } from "../../../../../../../libs/corsHeader";
 import mongoose from "mongoose";
 
 

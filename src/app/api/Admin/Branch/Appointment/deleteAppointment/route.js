@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import connectMongoDB from "../../../../../../libs/dbConnect";
-import { getToken } from "../../../../../../libs/getToken";
-import { corsHeaders } from "../../../../../../libs/corsHeader";
-import Appointment from "../../../../../../models/Appointment";
-import Notification from "../../../../../../models/Notification";
+import connectMongoDB from "../../../../../../../libs/dbConnect";
+import { getToken } from "../../../../../../../libs/getToken";
+import Appointment from "../../../../../../../models/Appointment";
+import Notification from "../../../../../../../models/Notification";
+import { corsHeaders } from "../../../../../../../libs/corsHeader";
+
 
 export async function DELETE(req) {
   await connectMongoDB();
