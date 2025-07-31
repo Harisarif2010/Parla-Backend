@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
-import connectMongoDB from "../../../../../../libs/dbConnect";
-import { getToken } from "../../../../../../libs/getToken";
-import Offer from "../../../../../../models/Offer";
 import mongoose from "mongoose";
-import { corsHeaders } from "../../../../../../libs/corsHeader";
+import connectMongoDB from "../../../../../../../libs/dbConnect";
+import { getToken } from "../../../../../../../libs/getToken";
+import Offer from "../../../../../../../models/Offer";
+import { corsHeaders } from "../../../../../../../libs/corsHeader";
 
 export async function GET(req) {
   try {
-      await connectMongoDB();
-      
+    await connectMongoDB();
+
     const token = await getToken(req);
     if (!token || token.error) {
       return NextResponse.json(
