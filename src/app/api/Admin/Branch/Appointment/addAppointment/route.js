@@ -4,6 +4,7 @@ import { getToken } from "../../../../../../../libs/getToken";
 import { corsHeaders } from "../../../../../../../libs/corsHeader";
 import Appointment from "../../../../../../../models/Appointment";
 import Notification from "../../../../../../../models/Notification";
+import mongoose from "mongoose";
 
 export async function POST(req) {
   await connectMongoDB();
