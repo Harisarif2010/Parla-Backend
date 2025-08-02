@@ -23,6 +23,7 @@ export async function GET(req) {
       {
         $match: {
           branchId: new mongoose.Types.ObjectId(branchId),
+          type: "offer",
         },
       },
       {
