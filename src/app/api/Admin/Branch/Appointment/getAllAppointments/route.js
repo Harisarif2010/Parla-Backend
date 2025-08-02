@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import connectMongoDB from "../../../../../../../libs/dbConnect";
 import { getToken } from "../../../../../../../libs/getToken";
-import { corsHeaders } from "../../../../../../../libs/corsHeader";
 import Appointment from "../../../../../../../models/Appointment";
-import mongoose from "mongoose";
+import { corsHeaders } from "../../../../../../../libs/corsHeader";
 
 export async function GET(req) {
   try {
@@ -18,20 +17,19 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const limit = parseInt(searchParams.get("limit")) || 10;
     const page = parseInt(searchParams.get("page")) || 1;
-    const type = searchParams.get("type");
-    const branchId = searchParams.get("branchId");
+    // const type = searchParams.get("type");
 
     const totalCount = await Appointment.countDocuments({
-      branchId: new mongoose.Types.ObjectId(branchId),
-      status: type,
+      // customerId: new mongoose.Types.ObjectId(token.id),
+      // status: type,
     });
     const appointments = await Appointment.aggregate([
-      {
-        $match: {
-          branchId: new mongoose.Types.ObjectId(branchId),
-          status: type,
-        },
-      },
+      // {
+      //   $match: {
+      //     customerId: new mongoose.Types.ObjectId(token.id),
+      //     status: type,
+      //   },
+      // },
       {
         $project: {
           _id: 1,
@@ -63,7 +61,7 @@ export async function GET(req) {
     const hasMore = page < totalPages;
     return NextResponse.json(
       {
-        message: "All Appointments of this Branch",
+        message: "All Appointments For Admin",
         data: appointments,
         pagination: {
           currentPage: page,
