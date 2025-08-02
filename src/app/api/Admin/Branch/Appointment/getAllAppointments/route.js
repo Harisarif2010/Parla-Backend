@@ -3,6 +3,7 @@ import connectMongoDB from "../../../../../../../libs/dbConnect";
 import { getToken } from "../../../../../../../libs/getToken";
 import Appointment from "../../../../../../../models/Appointment";
 import { corsHeaders } from "../../../../../../../libs/corsHeader";
+import mongoose from "mongoose";
 
 export async function GET(req) {
   try {
