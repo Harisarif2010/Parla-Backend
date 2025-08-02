@@ -17,19 +17,19 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const limit = parseInt(searchParams.get("limit")) || 10;
     const page = parseInt(searchParams.get("page")) || 1;
-    // const type = searchParams.get("type");
+    const type = searchParams.get("type");
 
     const totalCount = await Appointment.countDocuments({
       // customerId: new mongoose.Types.ObjectId(token.id),
-      // status: type,
+      status: type,
     });
     const appointments = await Appointment.aggregate([
-      // {
-      //   $match: {
-      //     customerId: new mongoose.Types.ObjectId(token.id),
-      //     status: type,
-      //   },
-      // },
+      {
+        $match: {
+          // customerId: new mongoose.Types.ObjectId(token.id),
+          status: type,
+        },
+      },
       {
         $project: {
           _id: 1,
