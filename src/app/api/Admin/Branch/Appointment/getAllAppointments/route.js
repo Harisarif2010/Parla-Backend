@@ -18,6 +18,66 @@ export async function GET(req) {
     const limit = parseInt(searchParams.get("limit")) || 10;
     const page = parseInt(searchParams.get("page")) || 1;
     const type = searchParams.get("type");
+    const customerId = searchParams.get("customerId");
+
+    if (customerId) {
+      const totalCount = await Appointment.countDocuments({
+        customerId: new mongoose.Types.ObjectId(customerId),
+        status: type,
+      });
+      const appointments = await Appointment.aggregate([
+        {
+          $match: {
+            customerId: new mongoose.Types.ObjectId(customerId),
+            status: type,
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            employeeId: 1,
+            appointmentNo: 1,
+            serviceName: 1,
+            serviceMints: 1,
+            price: 1,
+            bookingTime: 1,
+            bookingDate: 1,
+            statsus: 1,
+            employeeName: 1,
+            timeestamp: 1,
+          },
+        },
+        {
+          $skip: (page - 1) * limit,
+        },
+        {
+          $limit: limit,
+        },
+        {
+          $sort: {
+            timestamp: 1,
+          },
+        },
+      ]);
+      const totalPages = Math.ceil(totalCount / limit);
+      const hasMore = page < totalPages;
+      return NextResponse.json(
+        {
+          message: "All Appointments For Customer",
+          data: appointments,
+          pagination: {
+            currentPage: page,
+            totalPages,
+            hasMore,
+            totalCount,
+          },
+        },
+        {
+          status: 200,
+          headers: corsHeaders, // ← Make sure to include CORS headers
+        }
+      );
+    }
 
     const totalCount = await Appointment.countDocuments({
       // customerId: new mongoose.Types.ObjectId(token.id),
