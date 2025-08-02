@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import connectMongoDB from "../../../../../../libs/dbConnect";
-import { getToken } from "../../../../../../libs/getToken";
-import Employee from "../../../../../../models/Employee";
-import { corsHeaders } from "../../../../../../libs/corsHeader";
+import connectMongoDB from "../../../../../../../libs/dbConnect";
+import { getToken } from "../../../../../../../libs/getToken";
+import { corsHeaders } from "../../../../../../../libs/corsHeader";
+import Employee from "../../../../../../../models/Employee";
 
 export async function GET(req) {
   try {

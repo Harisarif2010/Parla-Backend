@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
 import connectMongoDB from "../../../../../../../libs/dbConnect";
 import { getToken } from "../../../../../../../libs/getToken";
-import { corsHeaders } from "../../../../../../../libs/corsHeader";
 import Message from "../../../../../../../models/Message";
 import Customer from "../../../../../../../models/Customer";
 import Employee from "../../../../../../../models/Employee";
 import Admin from "../../../../../../../models/Admin";
-
+import { corsHeaders } from "../../../../../../../libs/corsHeader";
 export async function GET(req) {
   try {
     await connectMongoDB();
