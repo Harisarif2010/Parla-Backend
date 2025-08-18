@@ -117,6 +117,12 @@ export async function GET(req) {
           createdAt: -1,
         },
       },
+      {
+        $skip: skip, // 👈 apply skip
+      },
+      {
+        $limit: limit, // 👈 apply limit
+      },
     ]);
 
     // Add available time slots for the next 7 days

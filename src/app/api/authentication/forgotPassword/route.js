@@ -15,8 +15,6 @@ export async function POST(req) {
     const body = await req.json();
     const { email, role } = body;
 
-    console.log("Request body:", email, role);
-
     // Validate the request body against the Joi schema
     const { error } = forgotPasswordSchema.validate({ email, role }); // ✅ Added role validation if needed
     if (error) {

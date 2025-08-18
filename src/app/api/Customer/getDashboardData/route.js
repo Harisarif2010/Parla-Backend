@@ -24,9 +24,9 @@ export async function GET(req) {
     const type = searchParams.get("type");
     const gender = searchParams.get("gender");
 
-    if (!customerId) {
+    if (!customerId || !type || !gender) {
       return NextResponse.json(
-        { error: "Customer ID is required" },
+        { error: "Fields Are Required" },
         { status: 400 }
       );
     }
@@ -39,6 +39,7 @@ export async function GET(req) {
       );
     }
 
+    const totalCount = await Employee.countDocuments();
     const getEmployees = await Employee.aggregate([
       {
         $match: {
@@ -58,10 +59,18 @@ export async function GET(req) {
         },
       },
     ]);
+    const totalPages = Math.ceil(totalCount / limit);
+    const hasMore = page < totalPages;
     return NextResponse.json(
       {
         message: "Dashboard Data",
         data: getEmployees,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          hasMore,
+          totalCount,
+        },
       },
       { status: 200 }
     );
@@ -81,4 +90,3 @@ export async function OPTIONS(req) {
     headers: corsHeaders,
   });
 }
-
