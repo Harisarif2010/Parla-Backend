@@ -52,7 +52,8 @@ export async function GET(req) {
   }
 }
 
-// Handle CORS preflight
+
+
 export async function OPTIONS(req) {
   return new NextResponse(null, {
     status: 200,

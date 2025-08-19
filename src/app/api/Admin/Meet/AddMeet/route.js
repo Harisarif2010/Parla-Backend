@@ -9,69 +9,62 @@ import mongoose from "mongoose";
 export async function POST(req) {
   await connectMongoDB();
 
-//   const token = await getToken(req);
-//   if (!token || token.error) {
-//     return NextResponse.json(
-//       { error: token?.error || "Unauthorized Access" },
-//       {
-//         status: 401,
-//         headers: { ...corsHeaders, "Content-Type": "application/json" },
-//       }
-//     );
-//   }
-  const {
-    partnerName,
-    description,
-    assignedBy,
-    taskVisibility,
-    gender,
-    age,
-    phone,
-    datetime,
-    nextMeet,
-    address,
-    location,
-    purpose,
-  } = await req.json();
+  const token = await getToken(req);
+  if (!token || token.error) {
+    console.log("❌ Unauthorized access:", token);
+    return NextResponse.json(
+      { error: token?.error || "Unauthorized Access" },
+      {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
+  }
 
+  const formData = await req.formData();
+  for (let [key, value] of formData.entries()) {
+    console.log(`   ${key}:`, value);
+  }
+
+  // Extract fields
+  let partnerName = formData.get("partnerName");
+  let description = formData.get("description");
+  let assignedBy = formData.get("assignedBy");
+  let taskVisibility = formData.getAll("taskVisibility");
+  let gender = formData.get("gender");
+  let age = formData.get("age");
+  let phone = formData.get("phone");
+  let datetime = formData.get("datetime");
+  let nextMeet = formData.get("nextMeet");
+  let address = formData.get("address");
+  let location = formData.get("location");
+  let purpose = formData.get("purpose");
+
+  // Parse location
+  try {
+    location = location ? JSON.parse(location) : null;
+  } catch (err) {
+    location = null;
+  }
+
+  // Required field checks
   const fields = [];
-  if (!partnerName) {
-    fields.push("partnerName");
-  }
-  if (!description) {
-    fields.push("description");
-  }
-  if (!assignedBy) {
-    fields.push("assignedBy");
-  }
-  if (!taskVisibility || taskVisibility.length === 0) {
+  if (!partnerName) fields.push("partnerName");
+  if (!description) fields.push("description");
+  if (!assignedBy) fields.push("assignedBy");
+  if (!taskVisibility || taskVisibility.length === 0)
     fields.push("taskVisibility");
-  }
-  if (!gender) {
-    fields.push("gender");
-  }
-  if (!age) {
-    fields.push("age");
-  }
-
-  if (!phone) {
-    fields.push("phone");
-  }
-  if (!datetime) {
-    fields.push("datetime");
-  }
-  if (!nextMeet) {
-    fields.push("nextMeet");
-  }
-  if (!address) {
-    fields.push("address");
-  }
-  if (!location || !location.coordinates || location.coordinates.length !== 2) {
+  if (!gender) fields.push("gender");
+  if (!age) fields.push("age");
+  if (!phone) fields.push("phone");
+  if (!datetime) fields.push("datetime");
+  if (!nextMeet) fields.push("nextMeet");
+  if (!address) fields.push("address");
+  if (!location || !location.cordinates) {
     fields.push("location");
   }
-  if (!purpose) {
-    fields.push("purpose");
-  }
+  if (!purpose) fields.push("purpose");
+
   if (fields.length > 0) {
     return NextResponse.json(
       { error: `All Fields Are Required: ${fields.join(", ")}` },
@@ -80,7 +73,24 @@ export async function POST(req) {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
-    }
+  }
+
+  // If it's coming as a stringified array → parse it
+  try {
+    taskVisibility = taskVisibility ? JSON.parse(taskVisibility) : [];
+  } catch (err) {
+    taskVisibility = [];
+  }
+
+  // Handle taskVisibility string
+  if (
+    Array.isArray(taskVisibility) &&
+    taskVisibility.length === 1 &&
+    typeof taskVisibility[0] === "string"
+  ) {
+    taskVisibility = taskVisibility[0].split(",");
+  }
+
   try {
     const addMeet = await Meet.create({
       partnerName,
@@ -95,13 +105,13 @@ export async function POST(req) {
       address,
       location: {
         type: "Point",
-        coordinates: location.coordinates,  
+        coordinates: [location.cordinates.lng, location.cordinates.lat],
       },
       purpose,
       status: "Incomplete",
     });
-    await addMeet.save();
-    // Create notifications for each employee in taskVisibility
+
+    // Create notifications
     const notifications = taskVisibility.map((empId) => ({
       title: `New Meet Coming Up`,
       message: "You have a new meet assigned",
@@ -122,6 +132,7 @@ export async function POST(req) {
       }
     );
   } catch (error) {
+    console.error("❌ Error while creating meet:", error);
     return NextResponse.json(
       { error: "Failed to add task" },
       {

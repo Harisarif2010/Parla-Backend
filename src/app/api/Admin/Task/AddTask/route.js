@@ -11,16 +11,16 @@ import mongoose from "mongoose";
 export async function POST(req) {
   await connectMongoDB();
 
-    const token = await getToken(req);
-    if (!token || token.error) {
-      return NextResponse.json(
-        { error: token?.error || "Unauthorized Access" },
-        {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
-    }
+  const token = await getToken(req);
+  if (!token || token.error) {
+    return NextResponse.json(
+      { error: token?.error || "Unauthorized Access" },
+      {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
+  }
   const formData = await req.formData();
 
   const title = formData.get("title");
@@ -32,7 +32,7 @@ export async function POST(req) {
   const assigner = formData.get("assigner");
   const message = formData.get("message");
   const media = formData.get("media");
-  const taskVisibility = formData.getAll("taskVisibility");
+  let taskVisibility = formData.getAll("taskVisibility");
 
   const fields = [];
   if (!title) {
@@ -59,9 +59,10 @@ export async function POST(req) {
   if (!assigner) {
     fields.push("assigner");
   }
-  if (!message) {
-    fields.push("message");
-  }
+  // if (!message) {
+  //   fields.push("message");
+  // }
+
   if (fields.length > 0) {
     return NextResponse.json(
       { error: `All Fields Are Required: ${fields.join(", ")}` },
@@ -71,6 +72,14 @@ export async function POST(req) {
       }
     );
   }
+  if (
+    Array.isArray(taskVisibility) &&
+    taskVisibility.length === 1 &&
+    typeof taskVisibility[0] === "string"
+  ) {
+    taskVisibility = taskVisibility[0].split(",");
+  }
+
   try {
     let imageUrl = null;
     if (media) {
@@ -90,6 +99,7 @@ export async function POST(req) {
       await s3.send(new PutObjectCommand(params));
       imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
     }
+
     const addTask = await Task.create({
       title,
       taskName,
@@ -99,7 +109,7 @@ export async function POST(req) {
       dueDate: new Date(dueDate),
       taskVisibility: taskVisibility,
       assigner,
-      message,
+      message: "Hello",
       media: imageUrl || null, // Store the image URL if available
     });
     await addTask.save();
@@ -117,9 +127,8 @@ export async function POST(req) {
     await TaskNotification.insertMany(notifications);
 
     return NextResponse.json(
-      { message: "Task Added Successfully" },
+      { message: "Task Added Successfully", status: 201 },
       {
-        status: 201,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
