@@ -111,19 +111,24 @@ export async function POST(req) {
       status: "Incomplete",
     });
 
-    // Create notifications
-    const notifications = taskVisibility.map((empId) => ({
-      title: `New Meet Coming Up`,
-      message: "You have a new meet assigned",
-      data: { meetId: addMeet._id },
-      role: "Admin",
-      createdBy: new mongoose.Types.ObjectId("6821df765c60cf3a0c7098e1"),
-      recipient: new mongoose.Types.ObjectId(empId),
-      isRead: false,
-    }));
 
-    await TaskNotification.insertMany(notifications);
+     const notification = {
+       title: `New Meet Coming Up`,
+       message: "You have a new meet assigned",
+       role: "Admin",
+       createdBy: {
+         role: "Admin",
+         user: new mongoose.Types.ObjectId("6821df765c60cf3a0c7098e1"),
+       },
+       recipients: taskVisibility.map((empId) => ({
+         user: new mongoose.Types.ObjectId(empId),
+         role: "Employee",
+         isRead: false,
+       })),
+     };
 
+     // Save single notification
+     await TaskNotification.create(notification);
     return NextResponse.json(
       { message: "Meet Added Successfully" },
       {
