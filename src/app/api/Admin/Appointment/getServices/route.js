@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import connectMongoDB from "../../../../../../../libs/dbConnect";
-import { getToken } from "../../../../../../../libs/getToken";
-import { corsHeaders } from "../../../../../../../libs/corsHeader";
-import Service from "../../../../../../../models/Service";
+import connectMongoDB from "../../../../../../libs/dbConnect";
+import { corsHeaders } from "../../../../../../libs/corsHeader";
+import { getToken } from "../../../../../../libs/getToken";
+import Service from "../../../../../../models/Service";
 
 export async function GET(req) {
   try {
@@ -19,7 +19,6 @@ export async function GET(req) {
     const page = parseInt(searchParams.get("page")) || 1;
     const gender = searchParams.get("gender");
     const category = searchParams.get("category");
-
     let genders;
     if (gender === "male" || gender === "female") {
       genders = [gender];
@@ -27,16 +26,17 @@ export async function GET(req) {
       genders = ["male", "female"];
     }
 
-    const totalCount = await Service.countDocuments({
-      gender: { $in: genders },
-      category: category,
-    });
+    let matchQuery = { gender: { $in: genders } };
+
+    if (category && category !== "undefined" && category !== "null") {
+      matchQuery.category = category;
+    }
+
+    // Count
+    const totalCount = await Service.countDocuments(matchQuery);
     const getServices = await Service.aggregate([
       {
-        $match: {
-          gender: { $in: genders },
-          category: category,
-        },
+        $match: matchQuery
       },
       {
         $project: {
@@ -74,9 +74,11 @@ export async function GET(req) {
     ]);
     const totalPages = Math.ceil(totalCount / limit);
     const hasMore = page < totalPages;
+
     return NextResponse.json(
       {
         message: "All Services",
+        status: 200,
         data: getServices,
         pagination: {
           currentPage: page,
@@ -86,7 +88,6 @@ export async function GET(req) {
         },
       },
       {
-        status: 200,
         headers: corsHeaders, // ← Make sure to include CORS headers
       }
     );

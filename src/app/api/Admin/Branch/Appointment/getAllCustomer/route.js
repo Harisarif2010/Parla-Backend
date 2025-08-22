@@ -6,13 +6,13 @@ import { corsHeaders } from "../../../../../../../libs/corsHeader";
 export async function GET(req) {
   try {
     await connectMongoDB();
-    // const token = await getToken(req);
-    // if (!token || token.error) {
-    //   return NextResponse.json(
-    //     { error: token?.error || "Unauthorized Access" },
-    //     { status: 401, headers: corsHeaders  }
-    //   );
-    // }
+    const token = await getToken(req);
+    if (!token || token.error) {
+      return NextResponse.json(
+        { error: token?.error || "Unauthorized Access" },
+        { status: 401, headers: corsHeaders }
+      );
+    }
     const { searchParams } = new URL(req.url);
     const limit = parseInt(searchParams.get("limit")) || 10;
     const page = parseInt(searchParams.get("page")) || 1;

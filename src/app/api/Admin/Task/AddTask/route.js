@@ -113,18 +113,24 @@ export async function POST(req) {
       media: imageUrl || null, // Store the image URL if available
     });
     await addTask.save();
-    // Create notifications for each employee in taskVisibility
-    const notifications = taskVisibility.map((empId) => ({
+    // Create ONE notification for all employees in taskVisibility
+    const notification = {
       title: `New Task Assigned`,
-      message,
-      data: { taskId: addTask._id },
+      message: "You have been assigned a new task",
       role: "Admin",
-      createdBy: new mongoose.Types.ObjectId("6821df765c60cf3a0c7098e1"),
-      recipient: new mongoose.Types.ObjectId(empId),
-      isRead: false,
-    }));
+      createdBy: {
+        role: "Admin",
+        user: new mongoose.Types.ObjectId("6821df765c60cf3a0c7098e1"),
+      },
+      recipients: taskVisibility.map((empId) => ({
+        user: new mongoose.Types.ObjectId(empId),
+        role: "Employee",
+        isRead: false,
+      })),
+    };
 
-    await TaskNotification.insertMany(notifications);
+    // Save single notification
+    await TaskNotification.create(notification);
 
     return NextResponse.json(
       { message: "Task Added Successfully", status: 201 },
