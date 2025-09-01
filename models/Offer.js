@@ -1,5 +1,3 @@
-import { ref, required } from "joi";
-
 const mongoose = require("mongoose");
 
 // Define the schema for a post
@@ -9,14 +7,9 @@ const offerSchema = new mongoose.Schema(
       type: String,
       default: null, // Optional field for an image URL
     },
-    // category: {
-    //   type: String,
-    //   required: true,
-    // },
-    branchId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Branch",
-      required: false,
+    category: {
+      type: String,
+      required: true,
     },
     discountType: {
       type: String,
@@ -58,14 +51,27 @@ const offerSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    branchId: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Branch", // optional, only if you want to populate later
+        required: true,
+      },
+    ],
+
     type: {
       type: String,
       enum: ["post", "offer"],
       default: "offer",
     },
-    createdDate: {
-      type: Date,
-      default: null,
+    isApproved: {
+      type: Boolean,
+      default: false,
+    },
+    status: {
+      type: String,
+      enum: ["Active", "Not Active"], // allowed values
+      default: "Not Active", // default value if none is provided
     },
   },
   {

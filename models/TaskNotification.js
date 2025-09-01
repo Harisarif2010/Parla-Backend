@@ -64,7 +64,7 @@ const taskNotificationSchema = new mongoose.Schema(
       },
       role: {
         type: String,
-        enum: ["Admin", "BranchAdmin", "Customer", "Employee"],
+        enum: ["Admin", "BranchAdmin", "Customer", "Employee", "Branch"],
         required: true,
       },
     },
@@ -79,7 +79,7 @@ const taskNotificationSchema = new mongoose.Schema(
         },
         role: {
           type: String,
-          enum: ["Admin", "BranchAdmin", "Customer", "Employee"],
+          enum: ["Admin", "BranchAdmin", "Customer", "Employee", "Branch"],
           required: true,
         },
         isRead: {

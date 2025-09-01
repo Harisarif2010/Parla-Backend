@@ -19,24 +19,33 @@ export async function GET(req) {
     const page = parseInt(searchParams.get("page")) || 1;
     const gender = searchParams.get("gender");
     const category = searchParams.get("category");
-    let genders;
-    if (gender === "male" || gender === "female") {
-      genders = [gender];
-    } else {
-      genders = ["male", "female"];
+
+    let matchQuery = {};
+
+    // gender filter
+    if (gender === "male") {
+      matchQuery.gender = { $in: ["male"] };
+    } else if (gender === "female") {
+      matchQuery.gender = { $in: ["female"] };
+    } else if (gender === "popular") {
+      matchQuery.gender = { $in: ["male", "female"] };
     }
 
-    let matchQuery = { gender: { $in: genders } };
-
-    if (category && category !== "undefined" && category !== "null") {
+    // category filter
+    if (
+      category &&
+      category !== "undefined" &&
+      category !== "null" &&
+      category.trim() !== ""
+    ) {
       matchQuery.category = category;
     }
-
     // Count
     const totalCount = await Service.countDocuments(matchQuery);
+
     const getServices = await Service.aggregate([
       {
-        $match: matchQuery
+        $match: matchQuery,
       },
       {
         $project: {
@@ -74,7 +83,6 @@ export async function GET(req) {
     ]);
     const totalPages = Math.ceil(totalCount / limit);
     const hasMore = page < totalPages;
-
     return NextResponse.json(
       {
         message: "All Services",
@@ -102,7 +110,6 @@ export async function GET(req) {
     );
   }
 }
-
 // Handle CORS preflight
 export async function OPTIONS(req) {
   return new NextResponse(null, {

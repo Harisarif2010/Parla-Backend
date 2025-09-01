@@ -71,11 +71,11 @@ const appointmentSchema = new mongoose.Schema({
 
   payment: {
     type: String,
-    required: true,
+    // required: true,
   },
   paymentId: {
     type: String,
-    required: true,
+    // required: true,
   },
   timestamp: {
     type: Date,
