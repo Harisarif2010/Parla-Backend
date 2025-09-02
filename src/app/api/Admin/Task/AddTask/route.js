@@ -23,11 +23,11 @@ export async function POST(req) {
   }
   const formData = await req.formData();
 
-  const title = formData.get("title");
+  // const title = formData.get("title");
   const taskName = formData.get("taskName");
   const description = formData.get("description");
   const assignedBy = formData.get("assignedBy");
-  const titleName = formData.get("titleName");
+  // const titleName = formData.get("titleName");
   const dueDate = formData.get("dueDate");
   const assigner = formData.get("assigner");
   const message = formData.get("message");
@@ -35,9 +35,9 @@ export async function POST(req) {
   let taskVisibility = formData.getAll("taskVisibility");
 
   const fields = [];
-  if (!title) {
-    fields.push("title");
-  }
+  // if (!title) {
+  //   fields.push("title");
+  // }
   if (!taskName) {
     fields.push("taskName");
   }
@@ -47,9 +47,9 @@ export async function POST(req) {
   if (!assignedBy) {
     fields.push("assignedBy");
   }
-  if (!titleName) {
-    fields.push("titleName");
-  }
+  // if (!titleName) {
+  //   fields.push("titleName");
+  // }
   if (!dueDate) {
     fields.push("dueDate");
   }
@@ -101,11 +101,11 @@ export async function POST(req) {
     }
 
     const addTask = await Task.create({
-      title,
+      // title,
       taskName,
       description,
       assignedBy,
-      titleName,
+      // titleName,
       dueDate: new Date(dueDate),
       taskVisibility: taskVisibility,
       assigner,

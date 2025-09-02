@@ -2,10 +2,10 @@ const mongoose = require("mongoose");
 
 const taskSchema = new mongoose.Schema(
   {
-    title: {
-      type: String,
-      required: true,
-    },
+    // title: {
+    //   type: String,
+    //   required: true,
+    // },
     taskName: {
       type: String,
       required: true,
@@ -18,10 +18,10 @@ const taskSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    titleName: {
-      type: String,
-      required: true,
-    },
+    // titleName: {
+    //   type: String,
+    //   required: true,
+    // },
     dueDate: {
       type: Date,
       required: true,
