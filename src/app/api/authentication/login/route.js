@@ -49,9 +49,8 @@ export async function POST(req) {
         }
       );
     }
-    // Check if the user exists
     const checkUser = await UserModel.findOne({
-      email,
+      email: { $regex: `^${email}$`, $options: "i" },
     });
     if (!checkUser) {
       return NextResponse.json(
